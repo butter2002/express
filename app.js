@@ -8,7 +8,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var catRouter = require('./routes/cat');
 var dogRouter = require('./routes/dog'); // dogRouter のインポート
-
+var notes_from_bRouter = require('./routes/notes_from_b');
 var app = express();
 
 // view engine setup
@@ -25,6 +25,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/cat', catRouter); // catRouter の設定
 app.use('/dog', dogRouter); // dogRouter の設定
+app.use('/notes_from_b', notes_from_bRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
