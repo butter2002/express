@@ -1,10 +1,10 @@
 var express = require('express');
 var router = express.Router();
-const cors = require('cors'); // CORSミドルウェアを追加
+const cors = require('cors');
 const { MongoClient } = require("mongodb");
 
 const uri = "mongodb+srv://butter2002pp:MyG9dSyqnqE00yeo@test.ycp4yxb.mongodb.net/?retryWrites=true&w=majority&appName=test";
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+const client = new MongoClient(uri);
 
 // CORSミドルウェアを使用
 router.use(cors());
