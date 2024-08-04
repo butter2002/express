@@ -1,26 +1,37 @@
 var express = require('express');
 var router = express.Router();
-const cors = require('cors'); // corsミドルウェアを追加
-
-
-// 接続情報を設定
+const cors = require('cors'); // CORSミドルウェアを追加
 const { MongoClient } = require("mongodb");
-const uri = "mongodb+srv://butter2002pp:MyG9dSyqnqE00yeo@test.ycp4yxb.mongodb.net/?retryWrites=true&w=majority&appName=test";
-const client = new MongoClient(uri);
 
-// corsミドルウェアを使用
+const uri = "mongodb+srv://butter2002pp:MyG9dSyqnqE00yeo@test.ycp4yxb.mongodb.net/?retryWrites=true&w=majority&appName=test";
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
+// CORSミドルウェアを使用
 router.use(cors());
 
 router.get('/', async (req, res) => {
-// データベース、コレクションを指定
-const database = client.db('notes');
-const notes = database.collection('notes');
+  try {
+    // MongoDBへの接続を試みる
+    await client.connect();
+    console.log('Connected to MongoDB');
 
+    // データベース、コレクションを指定
+    const database = client.db('notes');
+    const notes = database.collection('notes');
 
-// 全てのドキュメントを取得
-const note = await notes.find({}).toArray();
+    // 全てのドキュメントを取得
+    const note = await notes.find({}).toArray();
+    console.log('Notes fetched successfully:', note);
 
-res.json(note);
-})
+    res.json(note);
+  } catch (error) {
+    // エラーハンドリング
+    console.error('Error occurred while fetching notes:', error);
+    res.status(500).send('Internal Server Error');
+  } finally {
+    // クライアント接続を閉じる
+    await client.close();
+  }
+});
 
 module.exports = router;
