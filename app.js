@@ -1,37 +1,46 @@
+var createError = require('http-errors');
 var express = require('express');
-var router = express.Router();
-const cors = require('cors');
-const { MongoClient } = require("mongodb");
+var path = require('path');
+var cookieParser = require('cookie-parser');
+var logger = require('morgan');
 
-const uri = "mongodb+srv://butter2002pp:MyG9dSyqnqE00yeo@test.ycp4yxb.mongodb.net/?retryWrites=true&w=majority&appName=test";
-const client = new MongoClient(uri);
+var indexRouter = require('./routes/index');
+var usersRouter = require('./routes/users');
+var catRouter = require('./routes/cat');
+var dogRouter = require('./routes/dog'); // dogRouter のインポート
+var notes_from_bRouter = require('./routes/notes_from_b');
+var app = express();
 
-// CORSミドルウェアを使用
-router.use(cors());
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'jade');
 
-router.get('/', async (req, res) => {
-  try {
-    // MongoDBへの接続を試みる
-    await client.connect();
-    console.log('Connected to MongoDB');
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
 
-    // データベース、コレクションを指定
-    const database = client.db('notes');
-    const notes = database.collection('notes');
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
+app.use('/cat', catRouter); // catRouter の設定
+app.use('/dog', dogRouter); // dogRouter の設定
+app.use('/notes_from_b', notes_from_bRouter);
 
-    // 全てのドキュメントを取得
-    const note = await notes.find({}).toArray();
-    console.log('Notes fetched successfully:', note);
-
-    res.json(note);
-  } catch (error) {
-    // エラーハンドリング
-    console.error('Error occurred while fetching notes:', error);
-    res.status(500).send('Internal Server Error');
-  } finally {
-    // クライアント接続を閉じる
-    await client.close();
-  }
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+  next(createError(404));
 });
 
-module.exports = router;
+// error handler
+app.use(function(err, req, res, next) {
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+  // render the error page
+  res.status(err.status || 500);
+  res.render('error');
+});
+
+module.exports = app;
