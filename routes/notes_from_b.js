@@ -5,8 +5,6 @@ const { MongoClient } = require("mongodb");
 
 const uri = "mongodb+srv://butter2002pp:MyG9dSyqnqE00yeo@test.ycp4yxb.mongodb.net/?retryWrites=true&w=majority&appName=test&tls=true";
 const client = new MongoClient(uri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
   connectTimeoutMS: 30000, // 接続タイムアウトを30秒に設定
   socketTimeoutMS: 45000   // ソケットタイムアウトを45秒に設定
 });
